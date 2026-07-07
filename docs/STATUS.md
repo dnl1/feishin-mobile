@@ -67,14 +67,42 @@ adiantada enquanto os spikes seguem bloqueados por hardware.
 - [ ] **Validação em device/simulador iOS contra Navidrome real** — mesmo
       bloqueio de hardware dos spikes (critério de verificação do PLAN.md)
 
-## Fases 2-8
+## Fase 2 — Biblioteca (somente leitura)
+
+Código completo e testado (65 testes verdes, `flutter analyze` limpo).
+
+- [x] Paginação: `PagedListController` genérico (infinite scroll) portando o
+      padrão de `query-keys.ts`/`utils-list-count.ts` — a contagem total vem
+      do `x-total-count` de cada página, **nunca** há chamada separada de
+      count (`lib/features/library/paged_list.dart`)
+- [x] Controllers family por entidade (álbuns/músicas/artistas/gêneros/
+      playlists) com chave em records (igualdade estrutural) + providers de
+      detalhe (`library_providers.dart`)
+- [x] Telas: grid de álbuns (com drill-down por gênero/artista), detalhe de
+      álbum (multi-disco, chips de gênero), artistas + detalhe (discografia
+      por ano), músicas, gêneros, playlists (lista + detalhe com todas as
+      faixas), rádios — todas com sort sheet (asc/desc), pull-to-refresh,
+      retry de erro e imagem de capa via `cached_network_image`
+- [x] Shell de navegação: `StatefulShellRoute` com tabs Início/Biblioteca
+      (Busca/Config + mini player chegam na Fase 3, conforme plano); Home
+      virou dashboard clicável com contagens
+- [x] Testes: paged controller (primeira página com count, loadMore até
+      esgotar, chamadas concorrentes colapsam, falha mantém itens + retry) e
+      widget test e2e (tab Biblioteca → grid → scroll infinito dispara 2ª
+      página → detalhe do álbum) com repositório fake
+- [ ] Telas de **pastas** (folders) — adiada: precisa do client Subsonic
+      (`getMusicDirectory`), que será portado junto com favoritos/lyrics na
+      Fase 5; não bloqueia as demais fases
+- [ ] Validação em device/simulador iOS contra Navidrome real (mesmo
+      bloqueio de hardware)
+
+## Fases 3-8
 
 | Fase | Escopo | Status |
 |---|---|---|
-| 2 | Biblioteca (somente leitura) | Não iniciada — próxima |
 | 3 | Engine de playback core | Não iniciada (depende do Spike A) |
 | 4 | Playback extra (EQ, sleep timer, scrobble, auto-DJ, downloads) | Não iniciada |
-| 5 | Favoritos, busca, lyrics, sharing, similares | Não iniciada |
+| 5 | Favoritos, busca, lyrics, sharing, similares (+ pastas da Fase 2) | Não iniciada |
 | 6 | Visualizer | Não iniciada (depende do Spike B) |
 | 7 | Temas + i18n | Não iniciada |
 | 8 | Configurações, polish, App Store | Não iniciada |
