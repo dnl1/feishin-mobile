@@ -7,9 +7,10 @@ once the Navidrome path is solid.
 
 See [docs/PLAN.md](docs/PLAN.md) for the full migration plan: architecture
 decisions (audio engine, visualizer), what's intentionally dropped vs.
-deferred, and the phase-by-phase breakdown. Update that file as phases
-complete or decisions change — it's the source of truth for scope, not this
-README.
+deferred, and the phase-by-phase breakdown. See [docs/STATUS.md](docs/STATUS.md)
+for what's actually done vs. pending right now. Update both as phases
+complete or decisions change — they're the source of truth for scope, not
+this README.
 
 ## Why this exists
 
@@ -43,7 +44,4 @@ by CI and locally via the command above — it is not committed.
 
 ## Status
 
-Phase 0 (foundations) in progress — see [docs/PLAN.md](docs/PLAN.md) for
-what's done vs. pending. The two highest-risk architecture questions (audio
-engine, visualizer) are already decided and documented there; the audio spike
-itself still needs to run on a macOS runner/device to be validated.
+See [docs/STATUS.md](docs/STATUS.md).
