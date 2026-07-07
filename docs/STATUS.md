@@ -173,26 +173,36 @@ Spike A for validado (ver estratégia de verificação sem Mac abaixo).
       renderizando um preview de tela sob 6 temas representativos — cobre a
       "camada 1" da estratégia de verificação sem Mac (abaixo)
       (`flutter test`: 110 testes verdes; `flutter analyze` limpo)
+- [x] **Camada 2 da estratégia sem Mac**: job `ios-theme-screenshots` na CI
+      (`.github/workflows/ci.yml`) sobe um iOS Simulator real (escolhido pelo
+      runtime iOS mais recente disponível no runner, não só "qualquer
+      iPhone" — evita um device de runtime incompatível com o Xcode ativo)
+      e roda `integration_test/theme_screenshots_test.dart` via `flutter
+      drive` (`test_driver/integration_test.dart`), publicando o PNG de cada
+      um dos 6 temas representativos como artifact (`theme-screenshots`) +
+      log verboso do drive (`theme-screenshots-drive-log`) pra diagnosticar
+      se travar de novo. Confirmado rodando de ponta a ponta (job verde em
+      14m13s) e os PNGs baixados batem visualmente com os golden tests do
+      Linux — fonte San Francisco real, dimensões de device reais
 - [ ] i18n (36 locales via `easy_localization`) — não iniciado
-- [ ] **Camada 2 da estratégia sem Mac**: estender o job `ios-build` da CI
-      pra subir o Simulator e tirar screenshot real (`xcrun simctl io
-      booted screenshot`) de cada tema como artifact — ainda não
-      implementado, é o próximo passo antes de considerar a Fase 7 fechada
 - [ ] Validação visual em device/simulador iOS real (ProMotion, cores OLED,
       dynamic type) — reservada pra polish da Fase 8, não bloqueia o porte
 
 ### Estratégia de verificação sem Mac (Fase 7 e além)
 
 Sem hardware Apple neste ambiente (ver "Bloqueios conhecidos"), a validação
-de temas usa duas camadas:
+de temas usa duas camadas — **as duas implementadas e verificadas**:
 
-1. **Golden/widget tests no Linux** (implementada) — sem simulador ou
-   device, pega mapeamento errado de token → papel do `ColorScheme`,
-   contraste ruim, override de Material faltando.
-2. **Screenshot real via CI macOS** (pendente) — o job `ios-build` já roda
-   num runner com Xcode; falta estender pra subir o Simulator e publicar
-   screenshot de cada tema como artifact, dando evidência de renderização
-   iOS real sem precisar de Mac próprio.
+1. **Golden/widget tests no Linux** — sem simulador ou device, pega
+   mapeamento errado de token → papel do `ColorScheme`, contraste ruim,
+   override de Material faltando (`test/core/theme/app_theme_golden_test.dart`).
+2. **Screenshot real via CI macOS** — job `ios-theme-screenshots` sobe o
+   Simulator e publica screenshot de cada tema como artifact, dando
+   evidência de renderização iOS real sem precisar de Mac próprio. Primeira
+   tentativa travou ~30min no handshake do `flutter drive` com um device de
+   runtime não-default; corrigido escolhendo sempre o runtime iOS mais
+   recente disponível, com timeouts (`timeout-minutes` em job/steps) e log
+   verboso como artifact pra não repetir uma trava sem diagnóstico.
 
 ## Fases 4, 5, 6, 8
 
