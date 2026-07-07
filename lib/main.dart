@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'core/theme/app_theme.dart';
+import 'core/theme/app_theme_id.dart';
 import 'features/auth/auth_controller.dart';
 import 'features/auth/server_store.dart';
+import 'features/settings/theme_controller.dart';
+import 'features/settings/theme_store.dart';
 import 'router/app_router.dart';
 
 Future<void> main() async {
@@ -11,11 +15,13 @@ Future<void> main() async {
 
   await Hive.initFlutter();
   final serverBox = await Hive.openBox<String>(ServerStore.boxName);
+  final themeBox = await Hive.openBox<String>(ThemeStore.boxName);
 
   runApp(
     ProviderScope(
       overrides: [
         serverStoreProvider.overrideWithValue(ServerStore(serverBox)),
+        themeStoreProvider.overrideWithValue(ThemeStore(themeBox)),
       ],
       child: const FeishinApp(),
     ),
@@ -27,12 +33,17 @@ class FeishinApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final selected = ref.watch(themeControllerProvider);
+
     return MaterialApp.router(
       title: 'Feishin',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      theme: buildAppThemeData(selected ?? AppThemeId.defaultLight),
+      darkTheme: buildAppThemeData(selected ?? AppThemeId.defaultDark),
+      themeMode: selected == null
+          ? ThemeMode.system
+          : (tokensFor(selected).mode == Brightness.dark
+                ? ThemeMode.dark
+                : ThemeMode.light),
       routerConfig: ref.watch(routerProvider),
     );
   }

@@ -137,14 +137,70 @@ Código completo e testado (65 testes verdes, `flutter analyze` limpo).
 - [ ] Integração SoLoud + `audio_service` — segue bloqueada pelo Spike A
       (precisa rodar em simulador/device iOS real)
 
-## Fases 4-8
+## Fase 7 — Temas (i18n ainda não iniciado)
+
+Escolhida para avançar em paralelo à Fase 3 porque é 100% Dart/Flutter, sem
+nenhuma dependência de áudio nativo — não corre risco de retrabalho quando o
+Spike A for validado (ver estratégia de verificação sem Mac abaixo).
+
+- [x] Script de extração (`scripts/`, não versionado — one-off) parseando os
+      32 arquivos `AppThemeConfiguration` de `src/shared/themes/*/*.ts` do
+      repo original (`~/work/repos/feishin`), aplicando o mesmo merge com
+      `defaultTheme.colors` que `getAppTheme` faz no web, e gerando
+      `lib/core/theme/app_theme_tokens_data.dart` (mecânico, evita
+      transcrever à mão 32×12 valores de cor)
+- [x] `AppThemeId` (enum 1:1 com `AppTheme` de `app-theme-types.ts`, com
+      labels de `THEME_DATA`) + `AppThemeTokens` (12 tokens de cor + `mode`)
+      — `lib/core/theme/`
+- [x] `buildAppThemeData(AppThemeId)`: mapeia os tokens pra `ColorScheme`
+      Material 3 (parte de `ColorScheme.dark()`/`.light()` pros papéis que o
+      contrato do feishin não define, sobrescreve primary/surface/error/
+      outline/etc.) + `FeishinColors` (`ThemeExtension`) pros tokens sem
+      papel M3 equivalente (`background-alternate`, `state-success`,
+      `state-warning`) — `lib/core/theme/app_theme.dart`,
+      `lib/core/theme/feishin_colors.dart`
+- [x] `ThemeStore` (Hive, mesmo padrão do `ServerStore`) + `ThemeController`
+      (Riverpod) persistindo a escolha do usuário (`null` = seguir claro/
+      escuro do sistema com os temas default) — `lib/features/settings/`
+- [x] `ThemeSettingsScreen`: lista os 32 temas agrupados claro/escuro com
+      swatch de preview, `/settings/theme`, acessível pelo ícone de paleta
+      na home; `MaterialApp` em `main.dart` usa `theme`/`darkTheme`/
+      `themeMode` a partir do controller
+- [x] Testes: fidelidade dos tokens gerados contra a fonte TS (spot-check em
+      6 temas, incluindo cor em hex e fallback pro tema default), mapeamento
+      pra `ColorScheme`/`FeishinColors` pros 32 temas, `ThemeStore`/
+      `ThemeController` (Hive temp, mesmo padrão da Fase 1), e golden tests
+      renderizando um preview de tela sob 6 temas representativos — cobre a
+      "camada 1" da estratégia de verificação sem Mac (abaixo)
+      (`flutter test`: 110 testes verdes; `flutter analyze` limpo)
+- [ ] i18n (36 locales via `easy_localization`) — não iniciado
+- [ ] **Camada 2 da estratégia sem Mac**: estender o job `ios-build` da CI
+      pra subir o Simulator e tirar screenshot real (`xcrun simctl io
+      booted screenshot`) de cada tema como artifact — ainda não
+      implementado, é o próximo passo antes de considerar a Fase 7 fechada
+- [ ] Validação visual em device/simulador iOS real (ProMotion, cores OLED,
+      dynamic type) — reservada pra polish da Fase 8, não bloqueia o porte
+
+### Estratégia de verificação sem Mac (Fase 7 e além)
+
+Sem hardware Apple neste ambiente (ver "Bloqueios conhecidos"), a validação
+de temas usa duas camadas:
+
+1. **Golden/widget tests no Linux** (implementada) — sem simulador ou
+   device, pega mapeamento errado de token → papel do `ColorScheme`,
+   contraste ruim, override de Material faltando.
+2. **Screenshot real via CI macOS** (pendente) — o job `ios-build` já roda
+   num runner com Xcode; falta estender pra subir o Simulator e publicar
+   screenshot de cada tema como artifact, dando evidência de renderização
+   iOS real sem precisar de Mac próprio.
+
+## Fases 4, 5, 6, 8
 
 | Fase | Escopo | Status |
 |---|---|---|
 | 4 | Playback extra (EQ, sleep timer, scrobble, auto-DJ, downloads) | Não iniciada |
 | 5 | Favoritos, busca, lyrics, sharing, similares (+ pastas da Fase 2) | Não iniciada |
 | 6 | Visualizer | Não iniciada (depende do Spike B) |
-| 7 | Temas + i18n | Não iniciada |
 | 8 | Configurações, polish, App Store | Não iniciada |
 
 ## Bloqueios conhecidos

@@ -39,6 +39,11 @@ class HomeScreen extends ConsumerWidget {
         title: Text(server?.name ?? 'Feishin'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.palette_outlined),
+            tooltip: 'Tema',
+            onPressed: () => context.push('/settings/theme'),
+          ),
+          IconButton(
             icon: const Icon(Icons.dns_outlined),
             tooltip: 'Servidores',
             onPressed: () => context.push('/servers'),

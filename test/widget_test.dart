@@ -1,8 +1,10 @@
+import 'package:feishin_mobile/core/theme/app_theme_id.dart';
 import 'package:feishin_mobile/data/repository_provider.dart';
 import 'package:feishin_mobile/domain/domain.dart';
 import 'package:feishin_mobile/features/auth/auth_controller.dart';
 import 'package:feishin_mobile/features/home/home_screen.dart';
 import 'package:feishin_mobile/features/player/mini_player.dart';
+import 'package:feishin_mobile/features/settings/theme_controller.dart';
 import 'package:feishin_mobile/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,6 +19,11 @@ class _FakeAuthController extends AuthController {
 
   @override
   Future<AuthState> build() async => _state;
+}
+
+class _FakeThemeController extends ThemeController {
+  @override
+  AppThemeId? build() => null;
 }
 
 final _server = ServerConfig(
@@ -39,6 +46,7 @@ ProviderScope _scopedApp(FakeRepository repository) => ProviderScope(
     libraryStatsProvider.overrideWith(
       (ref) async => (albums: 10, artists: 5, songs: 100),
     ),
+    themeControllerProvider.overrideWith(_FakeThemeController.new),
   ],
   child: const FeishinApp(),
 );
@@ -55,6 +63,7 @@ void main() {
               const AuthState(currentServerId: null, servers: []),
             ),
           ),
+          themeControllerProvider.overrideWith(_FakeThemeController.new),
         ],
         child: const FeishinApp(),
       ),

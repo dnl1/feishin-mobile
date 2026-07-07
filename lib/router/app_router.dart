@@ -18,6 +18,7 @@ import '../features/library/songs_screen.dart';
 import '../features/player/full_player_screen.dart';
 import '../features/servers/add_server_screen.dart';
 import '../features/servers/servers_screen.dart';
+import '../features/settings/theme_settings_screen.dart';
 import '../features/shell/app_shell.dart';
 
 /// Routes grow with the phases (Busca/Configurações tabs + player land with
@@ -141,6 +142,10 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const AddServerScreen(),
           ),
         ],
+      ),
+      GoRoute(
+        path: '/settings/theme',
+        builder: (context, state) => const ThemeSettingsScreen(),
       ),
     ],
   );
