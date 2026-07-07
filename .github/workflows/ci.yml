@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  FLUTTER_VERSION: '3.44.5'
+
+jobs:
+  analyze-and-test:
+    name: Analyze & test (Dart/Flutter, no platform build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+
+      - run: flutter pub get
+
+      - name: Generate freezed/json_serializable/riverpod code
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      - run: flutter analyze
+
+      - run: flutter test
+
+  ios-build:
+    name: Build iOS (no codesign)
+    runs-on: macos-latest
+    needs: analyze-and-test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+
+      - run: flutter pub get
+
+      - name: Generate freezed/json_serializable/riverpod code
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      # Validates the app actually compiles for iOS on a real Apple toolchain
+      # (the thing the Linux dev environment structurally cannot verify).
+      # Signing/TestFlight upload is a separate release workflow, added in
+      # phase 8 once there's an Apple Developer account to sign with.
+      - run: flutter build ios --release --no-codesign
