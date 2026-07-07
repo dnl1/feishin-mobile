@@ -82,49 +82,53 @@ void main() {
     tempDir.deleteSync(recursive: true);
   });
 
-  test('addServer persists config, credentials and current selection',
-      () async {
-    final container = buildContainer();
-    final controller = container.read(authControllerProvider.notifier);
-    await container.read(authControllerProvider.future);
+  test(
+    'addServer persists config, credentials and current selection',
+    () async {
+      final container = buildContainer();
+      final controller = container.read(authControllerProvider.notifier);
+      await container.read(authControllerProvider.future);
 
-    final config = await controller.addServer(
-      name: 'Home',
-      url: 'https://music.example.com/',
-      username: 'demo',
-      password: 'pw',
-      savePassword: true,
-    );
+      final config = await controller.addServer(
+        name: 'Home',
+        url: 'https://music.example.com/',
+        username: 'demo',
+        password: 'pw',
+        savePassword: true,
+      );
 
-    expect(config.url, 'https://music.example.com'); // trailing slash removed
-    expect(config.version, '0.55.0');
-    expect(config.features?['bfr'], [1]);
-    expect(config.isAdmin, isTrue);
+      expect(config.url, 'https://music.example.com'); // trailing slash removed
+      expect(config.version, '0.55.0');
+      expect(config.features?['bfr'], [1]);
+      expect(config.isAdmin, isTrue);
 
-    final state = await container.read(authControllerProvider.future);
-    expect(state.servers.map((s) => s.id), [config.id]);
-    expect(state.currentServerId, config.id);
-    expect(state.currentServer?.name, 'Home');
+      final state = await container.read(authControllerProvider.future);
+      expect(state.servers.map((s) => s.id), [config.id]);
+      expect(state.currentServerId, config.id);
+      expect(state.currentServer?.name, 'Home');
 
-    expect(secureStore.data['credentials:${config.id}'], contains('nd-1'));
-    expect(secureStore.data['password:${config.id}'], 'pw');
-  });
+      expect(secureStore.data['credentials:${config.id}'], contains('nd-1'));
+      expect(secureStore.data['password:${config.id}'], 'pw');
+    },
+  );
 
-  test('addServer without savePassword keeps the password out of storage',
-      () async {
-    final container = buildContainer();
-    final controller = container.read(authControllerProvider.notifier);
-    await container.read(authControllerProvider.future);
+  test(
+    'addServer without savePassword keeps the password out of storage',
+    () async {
+      final container = buildContainer();
+      final controller = container.read(authControllerProvider.notifier);
+      await container.read(authControllerProvider.future);
 
-    final config = await controller.addServer(
-      name: 'Home',
-      url: 'https://music.example.com',
-      username: 'demo',
-      password: 'pw',
-    );
+      final config = await controller.addServer(
+        name: 'Home',
+        url: 'https://music.example.com',
+        username: 'demo',
+        password: 'pw',
+      );
 
-    expect(secureStore.data.containsKey('password:${config.id}'), isFalse);
-  });
+      expect(secureStore.data.containsKey('password:${config.id}'), isFalse);
+    },
+  );
 
   test('deleteServer removes credentials and clears current', () async {
     final container = buildContainer();

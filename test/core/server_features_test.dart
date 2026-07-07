@@ -42,10 +42,7 @@ void main() {
     });
 
     test('handles version strings with suffixes', () {
-      final features = getFeatures(
-        navidromeVersionInfo,
-        '0.56.1 (fc8f494f)',
-      );
+      final features = getFeatures(navidromeVersionInfo, '0.56.1 (fc8f494f)');
       expect(features[ServerFeature.trackAlbumArtistSearch.key], [1]);
     });
 

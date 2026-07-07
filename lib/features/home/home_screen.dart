@@ -74,8 +74,10 @@ class HomeScreen extends ConsumerWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('Falha ao consultar o servidor:\n$error',
-                    textAlign: TextAlign.center),
+                Text(
+                  'Falha ao consultar o servidor:\n$error',
+                  textAlign: TextAlign.center,
+                ),
                 const SizedBox(height: 16),
                 FilledButton(
                   onPressed: () => ref.invalidate(libraryStatsProvider),

@@ -56,9 +56,9 @@ class _AddServerScreenState extends ConsumerState<AddServerScreen> {
       }
     } on Exception catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Falha ao conectar: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Falha ao conectar: $e')));
       }
     } finally {
       if (mounted) {
@@ -109,8 +109,9 @@ class _AddServerScreenState extends ConsumerState<AddServerScreen> {
                 autocorrect: false,
                 textInputAction: TextInputAction.next,
                 decoration: const InputDecoration(labelText: 'Usuário'),
-                validator: (value) =>
-                    (value?.trim().isEmpty ?? true) ? 'Informe o usuário' : null,
+                validator: (value) => (value?.trim().isEmpty ?? true)
+                    ? 'Informe o usuário'
+                    : null,
               ),
               const SizedBox(height: 12),
               TextFormField(

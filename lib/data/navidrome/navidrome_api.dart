@@ -160,7 +160,8 @@ class NavidromeApi {
   Future<NdPage> getAlbumList(Map<String, dynamic> query) =>
       _getList('album', query);
 
-  Future<Map<String, dynamic>> getAlbumDetail(String id) => _getOne('album/$id');
+  Future<Map<String, dynamic>> getAlbumDetail(String id) =>
+      _getOne('album/$id');
 
   // --- Album artist ---
 
@@ -208,9 +209,8 @@ class NavidromeApi {
   Future<void> deletePlaylist(String id) =>
       _request<dynamic>('playlist/$id', 'DELETE');
 
-  Future<void> addToPlaylist(String id, List<String> songIds) => _request<
-    dynamic
-  >('playlist/$id/tracks', 'POST', data: {'ids': songIds});
+  Future<void> addToPlaylist(String id, List<String> songIds) =>
+      _request<dynamic>('playlist/$id/tracks', 'POST', data: {'ids': songIds});
 
   Future<void> removeFromPlaylist(String id, List<String> songIds) =>
       _request<dynamic>(
@@ -252,15 +252,12 @@ class NavidromeApi {
 
   Future<Map<String, dynamic>> getQueue() => _getOne('queue');
 
-  Future<void> saveQueue({
-    List<String>? ids,
-    int? current,
-    int? position,
-  }) => _request<dynamic>(
-    'queue',
-    'POST',
-    data: {'ids': ?ids, 'current': ?current, 'position': ?position},
-  );
+  Future<void> saveQueue({List<String>? ids, int? current, int? position}) =>
+      _request<dynamic>(
+        'queue',
+        'POST',
+        data: {'ids': ?ids, 'current': ?current, 'position': ?position},
+      );
 
   // --- Sharing ---
 

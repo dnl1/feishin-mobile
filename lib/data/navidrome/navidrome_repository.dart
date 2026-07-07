@@ -454,5 +454,7 @@ class NavidromeRepository implements MusicServerRepository {
   /// Mirrors `excludeMissing` — post-BFR servers track missing files and
   /// list endpoints must filter them out.
   Map<String, dynamic> _excludeMissing() =>
-      hasFeature(server, ServerFeature.bfr) ? const {'missing': false} : const {};
+      hasFeature(server, ServerFeature.bfr)
+      ? const {'missing': false}
+      : const {};
 }

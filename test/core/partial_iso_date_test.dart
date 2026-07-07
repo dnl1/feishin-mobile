@@ -6,10 +6,10 @@ void main() {
     test('parses YYYY, YYYY-MM and YYYY-MM-DD', () {
       expect(parsePartialIsoDate('2020'), (date: '2020', year: 2020));
       expect(parsePartialIsoDate('2020-03'), (date: '2020-03', year: 2020));
-      expect(
-        parsePartialIsoDate('2020-03-05'),
-        (date: '2020-03-05', year: 2020),
-      );
+      expect(parsePartialIsoDate('2020-03-05'), (
+        date: '2020-03-05',
+        year: 2020,
+      ));
     });
 
     test('trims whitespace', () {
@@ -21,26 +21,26 @@ void main() {
       expect(parsePartialIsoDate(''), (date: null, year: 0));
       expect(parsePartialIsoDate('banana'), (date: null, year: 0));
       expect(parsePartialIsoDate('2020-3-5'), (date: null, year: 0));
-      expect(
-        parsePartialIsoDate('2020-03-05T10:00:00Z'),
-        (date: null, year: 0),
-      );
+      expect(parsePartialIsoDate('2020-03-05T10:00:00Z'), (
+        date: null,
+        year: 0,
+      ));
     });
   });
 
   group('parsePartialIsoDateFromApi', () {
     test('falls back to the YYYY-MM-DD prefix of a full ISO datetime', () {
-      expect(
-        parsePartialIsoDateFromApi('2020-03-05T10:00:00Z'),
-        (date: '2020-03-05', year: 2020),
-      );
+      expect(parsePartialIsoDateFromApi('2020-03-05T10:00:00Z'), (
+        date: '2020-03-05',
+        year: 2020,
+      ));
     });
 
     test('still rejects garbage', () {
-      expect(
-        parsePartialIsoDateFromApi('not-a-date-at-all'),
-        (date: null, year: 0),
-      );
+      expect(parsePartialIsoDateFromApi('not-a-date-at-all'), (
+        date: null,
+        year: 0,
+      ));
     });
   });
 

@@ -52,8 +52,9 @@ final navidromeAuthenticateProvider = Provider<AuthenticateFn>(
   (ref) => NavidromeRepository.authenticate,
 );
 
-final authControllerProvider =
-    AsyncNotifierProvider<AuthController, AuthState>(AuthController.new);
+final authControllerProvider = AsyncNotifierProvider<AuthController, AuthState>(
+  AuthController.new,
+);
 
 class AuthController extends AsyncNotifier<AuthState> {
   @override

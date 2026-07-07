@@ -31,7 +31,11 @@ ResponseBody jsonResponse(
   Object? body, {
   int status = 200,
   Map<String, List<String>>? headers,
-}) => ResponseBody.fromString(jsonEncode(body), status, headers: {
-  Headers.contentTypeHeader: ['application/json'],
-  ...?headers,
-});
+}) => ResponseBody.fromString(
+  jsonEncode(body),
+  status,
+  headers: {
+    Headers.contentTypeHeader: ['application/json'],
+    ...?headers,
+  },
+);

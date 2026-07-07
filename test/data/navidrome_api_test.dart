@@ -71,8 +71,7 @@ void main() {
     expect(rotated, 'tok-2');
   });
 
-  test('401 triggers a single re-auth shared by concurrent requests',
-      () async {
+  test('401 triggers a single re-auth shared by concurrent requests', () async {
     var token = 'expired';
     var reauthCalls = 0;
 
@@ -80,9 +79,12 @@ void main() {
       if (options.headers['x-nd-authorization'] == 'Bearer expired') {
         return jsonResponse('Unauthorized', status: 401);
       }
-      return jsonResponse([], headers: {
-        'x-total-count': ['0'],
-      });
+      return jsonResponse(
+        [],
+        headers: {
+          'x-total-count': ['0'],
+        },
+      );
     });
 
     final api = buildApi(
@@ -105,10 +107,7 @@ void main() {
     expect(reauthCalls, 1);
     // 2 failed + 2 retried requests.
     expect(adapter.requests, hasLength(4));
-    expect(
-      adapter.requests.last.headers['x-nd-authorization'],
-      'Bearer fresh',
-    );
+    expect(adapter.requests.last.headers['x-nd-authorization'], 'Bearer fresh');
   });
 
   test('401 without possible re-auth surfaces the original error', () async {
@@ -180,26 +179,25 @@ void main() {
     );
 
     expect(version, '0.55.0 (fc8f494f)');
-    expect(
-      adapter.requests.single.uri.queryParameters['u'],
-      'demo',
-    );
+    expect(adapter.requests.single.uri.queryParameters['u'], 'demo');
   });
 
-  test('server errors map to NavidromeApiException with the body message',
-      () async {
-    final adapter = FakeHttpAdapter(
-      (options) => jsonResponse({'error': 'boom'}, status: 500),
-    );
-    final api = buildApi(adapter);
+  test(
+    'server errors map to NavidromeApiException with the body message',
+    () async {
+      final adapter = FakeHttpAdapter(
+        (options) => jsonResponse({'error': 'boom'}, status: 500),
+      );
+      final api = buildApi(adapter);
 
-    await expectLater(
-      api.getAlbumDetail('al-1'),
-      throwsA(
-        isA<NavidromeApiException>()
-            .having((e) => e.statusCode, 'statusCode', 500)
-            .having((e) => e.message, 'message', 'boom'),
-      ),
-    );
-  });
+      await expectLater(
+        api.getAlbumDetail('al-1'),
+        throwsA(
+          isA<NavidromeApiException>()
+              .having((e) => e.statusCode, 'statusCode', 500)
+              .having((e) => e.message, 'message', 'boom'),
+        ),
+      );
+    },
+  );
 }

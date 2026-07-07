@@ -66,9 +66,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Casa'), findsOneWidget);
-    expect(
-      find.text('10 álbuns · 5 artistas · 100 músicas'),
-      findsOneWidget,
-    );
+    expect(find.text('10 álbuns · 5 artistas · 100 músicas'), findsOneWidget);
   });
 }

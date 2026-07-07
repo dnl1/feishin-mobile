@@ -16,9 +16,7 @@ class KeychainSecureStore implements SecureStore {
     FlutterSecureStorage(
       // Credentials must be readable while the app streams in background
       // with the device locked.
-      iOptions: IOSOptions(
-        accessibility: KeychainAccessibility.first_unlock,
-      ),
+      iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
     ),
   );
 

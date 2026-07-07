@@ -353,7 +353,9 @@ class NdNormalize {
       return fromDateField;
     }
 
-    final y = coerceYear(_num(item['minOriginalYear']) ?? _num(item['minYear']));
+    final y = coerceYear(
+      _num(item['minOriginalYear']) ?? _num(item['minYear']),
+    );
     if (y > 0) {
       return (date: '$y', year: y);
     }
@@ -419,9 +421,9 @@ class NdNormalize {
               userRating: null,
             );
 
-            subRoles.putIfAbsent(_string(artist['subRole']), () => []).add(
-              related,
-            );
+            subRoles
+                .putIfAbsent(_string(artist['subRole']), () => [])
+                .add(related);
           }
 
           for (final subRoleEntry in subRoles.entries) {

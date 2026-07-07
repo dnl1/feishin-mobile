@@ -26,10 +26,8 @@ class CredentialsStore {
     return ServerCredentials.fromJson(jsonDecode(raw) as Map<String, dynamic>);
   }
 
-  Future<void> setCredentials(
-    String serverId,
-    ServerCredentials credentials,
-  ) => _store.write(_credentialsKey(serverId), jsonEncode(credentials));
+  Future<void> setCredentials(String serverId, ServerCredentials credentials) =>
+      _store.write(_credentialsKey(serverId), jsonEncode(credentials));
 
   /// Stored only when the user opts into "save password" — enables silent
   /// re-login when the Navidrome token expires.

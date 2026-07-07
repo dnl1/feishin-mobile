@@ -153,13 +153,17 @@ void main() {
 
     test('explicit status flags', () {
       expect(
-        NdNormalize.song(ndSong()..['explicitStatus'] = 'e', server)
-            .explicitStatus,
+        NdNormalize.song(
+          ndSong()..['explicitStatus'] = 'e',
+          server,
+        ).explicitStatus,
         ExplicitStatus.explicit,
       );
       expect(
-        NdNormalize.song(ndSong()..['explicitStatus'] = 'c', server)
-            .explicitStatus,
+        NdNormalize.song(
+          ndSong()..['explicitStatus'] = 'c',
+          server,
+        ).explicitStatus,
         ExplicitStatus.clean,
       );
     });
