@@ -31,20 +31,51 @@ o histórico do chat.
 **Fase 0 não está completa** até os dois spikes rodarem de verdade — é o
 critério de saída definido no plano, não "compilou no CI".
 
-## Fases 1-8
+## Fase 1 — Auth + camada de dados Navidrome
 
-Não iniciadas — dependem da Fase 0 fechar primeiro (a decisão de engine de
-áudio já está tomada e documentada no PLAN.md, mas só fica validada depois
-do Spike A rodar em device real).
+Código completo e testado (60 testes verdes, `flutter analyze` limpo).
+A Fase 1 **não depende dos spikes** (é Dart puro, sem áudio) — por isso foi
+adiantada enquanto os spikes seguem bloqueados por hardware.
+
+- [x] `NavidromeApi` (Dio): endpoints do contrato ND (`/api/...`) + login
+      (`/auth/login`) + ping Subsonic (versão do servidor). Inclui captura
+      de token rotacionado (`x-nd-authorization`) e re-auth automática em
+      401 com single-flight (porta do interceptor de `navidrome-api.ts`)
+      — `lib/data/navidrome/navidrome_api.dart`
+- [x] `NdNormalize`: porta 1:1 de `navidrome-normalize.ts` (participants/
+      subRoles, datas parciais com fallback minYear, tags de álbum →
+      recordLabels/releaseTypes/version, cache-bust de imagem, sentinela
+      `0001-` de playDate, semântica de truthiness do TS) —
+      `lib/data/navidrome/navidrome_normalizer.dart`
+- [x] Sort maps domain→ND portados de `domain-types.ts`
+      (`lib/data/navidrome/navidrome_types.dart`, `lib/data/queries.dart`)
+- [x] Interface `MusicServerRepository` + `NavidromeRepository` (espelha
+      `navidrome-controller.ts`: contagens via `x-total-count`, genre via
+      tag pós-BFR, `role=albumartist`, `missing=false`, URL builders de
+      stream/download/cover art via credencial Subsonic)
+- [x] Feature detection por versão (`getFeatures`/`hasFeature` +
+      `VERSION_INFO`) — `lib/core/server_features.dart`
+- [x] `AuthController` (Riverpod): config de servidor em Hive (não-secreto),
+      credenciais + senha opcional em `flutter_secure_storage` (Keychain,
+      `first_unlock` p/ streaming em background) — `lib/features/auth/`
+- [x] Telas: lista de servidores, adicionar servidor (login), home com
+      smoke-test real (contagens de álbuns/artistas/músicas) + `go_router`
+      com redirect quando não há servidor
+- [x] Testes: normalizer (fixtures ND), API (adapter Dio fake: headers,
+      401→re-auth, rotação de token), repository (BFR on/off, URLs), auth
+      controller (Hive temp + secure storage em memória), widget tests
+- [ ] **Validação em device/simulador iOS contra Navidrome real** — mesmo
+      bloqueio de hardware dos spikes (critério de verificação do PLAN.md)
+
+## Fases 2-8
 
 | Fase | Escopo | Status |
 |---|---|---|
-| 1 | Auth + camada de dados Navidrome | Não iniciada |
-| 2 | Biblioteca (somente leitura) | Não iniciada |
-| 3 | Engine de playback core | Não iniciada |
+| 2 | Biblioteca (somente leitura) | Não iniciada — próxima |
+| 3 | Engine de playback core | Não iniciada (depende do Spike A) |
 | 4 | Playback extra (EQ, sleep timer, scrobble, auto-DJ, downloads) | Não iniciada |
 | 5 | Favoritos, busca, lyrics, sharing, similares | Não iniciada |
-| 6 | Visualizer | Não iniciada |
+| 6 | Visualizer | Não iniciada (depende do Spike B) |
 | 7 | Temas + i18n | Não iniciada |
 | 8 | Configurações, polish, App Store | Não iniciada |
 
