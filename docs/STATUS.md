@@ -16,6 +16,10 @@ o histórico do chat.
 - [x] CI no GitHub Actions: `analyze-and-test` (Ubuntu) + `ios-build` (macOS
       runner, `flutter build ios --no-codesign`)
 - [x] Repositório público: https://github.com/dnl1/feishin-mobile
+- [x] **CI validado ponta a ponta**: os dois jobs (`analyze-and-test` e
+      `ios-build`) passaram no primeiro push pra `main` — o scaffold compila
+      de verdade num toolchain Xcode real, não só localmente
+      ([run 28837763466](https://github.com/dnl1/feishin-mobile/actions/runs/28837763466))
 - [ ] **Spike A (áudio)** — protótipo `flutter_soloud` + `audio_service`
       fim a fim (stream HTTP real, EQ, compressor, lock screen). **Bloqueado**:
       precisa rodar em simulador/dispositivo iOS real, não só compilar — CI
