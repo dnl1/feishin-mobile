@@ -44,6 +44,11 @@ class HomeScreen extends ConsumerWidget {
             onPressed: () => context.push('/settings/theme'),
           ),
           IconButton(
+            icon: const Icon(Icons.language_outlined),
+            tooltip: 'Idioma',
+            onPressed: () => context.push('/settings/language'),
+          ),
+          IconButton(
             icon: const Icon(Icons.dns_outlined),
             tooltip: 'Servidores',
             onPressed: () => context.push('/servers'),

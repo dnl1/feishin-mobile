@@ -18,6 +18,7 @@ import '../features/library/songs_screen.dart';
 import '../features/player/full_player_screen.dart';
 import '../features/servers/add_server_screen.dart';
 import '../features/servers/servers_screen.dart';
+import '../features/settings/locale_settings_screen.dart';
 import '../features/settings/theme_settings_screen.dart';
 import '../features/shell/app_shell.dart';
 
@@ -146,6 +147,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/settings/theme',
         builder: (context, state) => const ThemeSettingsScreen(),
+      ),
+      GoRoute(
+        path: '/settings/language',
+        builder: (context, state) => const LocaleSettingsScreen(),
       ),
     ],
   );
