@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/formatters.dart';
 import '../../domain/domain.dart';
 import 'library_providers.dart';
+import '../player/player.dart';
 import 'widgets/cover_art.dart';
 import 'widgets/error_retry.dart';
 
@@ -34,13 +35,13 @@ class AlbumDetailScreen extends ConsumerWidget {
   }
 }
 
-class _AlbumDetail extends StatelessWidget {
+class _AlbumDetail extends ConsumerWidget {
   const _AlbumDetail({required this.album});
 
   final Album album;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final songs = album.songs ?? const <Song>[];
     final multiDisc = songs.any((song) => song.discNumber > 1);
 
@@ -155,8 +156,9 @@ class _AlbumDetail extends StatelessWidget {
                     )
                   : null,
               trailing: Text(formatDurationMs(song.duration)),
-              // Playback lands in phase 3 — tapping is a no-op for now.
-              onTap: () {},
+              onTap: () => ref
+                  .read(playerControllerProvider.notifier)
+                  .setQueue(songs, index: index),
             );
 
             if (!showDiscHeader) {

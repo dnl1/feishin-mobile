@@ -408,6 +408,37 @@ class NavidromeRepository implements MusicServerRepository {
     required List<String> playlistItemIds,
   }) => _api.removeFromPlaylist(playlistId, playlistItemIds);
 
+  // --- Play queue ---
+
+  @override
+  Future<ServerPlayQueue> getPlayQueue() async {
+    final item = await _api.getQueue();
+    final queueItems = item['items'];
+    final entries = queueItems is List
+        ? queueItems
+              .whereType<Map<String, dynamic>>()
+              .map((song) => NdNormalize.song(song, server))
+              .toList()
+        : <Song>[];
+
+    return ServerPlayQueue(
+      changed: item['updatedAt'] as String?,
+      changedBy: item['changedBy'] as String?,
+      currentIndex: item['current'] is int ? item['current'] as int : 0,
+      entry: entries,
+      positionMs: item['position'] is int ? item['position'] as int : null,
+      username: server.username,
+    );
+  }
+
+  @override
+  Future<void> savePlayQueue({
+    required List<String> songIds,
+    int? currentIndex,
+    int? positionMs,
+  }) =>
+      _api.saveQueue(ids: songIds, current: currentIndex, position: positionMs);
+
   // --- Internet radio ---
 
   @override

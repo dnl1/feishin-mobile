@@ -271,6 +271,63 @@ void main() {
     expect(page.items.single.playlistItemId, 'item-1');
   });
 
+  group('play queue', () {
+    test('getPlayQueue normalizes Navidrome queue response', () async {
+      final (repository, adapter) = buildRepository(
+        (options) => jsonResponse({
+          'changedBy': 'demo',
+          'current': 1,
+          'items': [ndSongJson('s-1'), ndSongJson('s-2')],
+          'position': 42000,
+          'updatedAt': '2026-07-07T10:00:00Z',
+        }),
+      );
+
+      final queue = await repository.getPlayQueue();
+
+      expect(adapter.requests.single.uri.path, '/api/queue');
+      expect(queue.changed, '2026-07-07T10:00:00Z');
+      expect(queue.changedBy, 'demo');
+      expect(queue.currentIndex, 1);
+      expect(queue.positionMs, 42000);
+      expect(queue.username, 'demo');
+      expect(queue.entry.map((song) => song.id), ['s-1', 's-2']);
+    });
+
+    test('getPlayQueue handles an empty server queue', () async {
+      final (repository, _) = buildRepository(
+        (options) => jsonResponse({'current': null}),
+      );
+
+      final queue = await repository.getPlayQueue();
+
+      expect(queue.currentIndex, 0);
+      expect(queue.entry, isEmpty);
+      expect(queue.positionMs, isNull);
+    });
+
+    test('savePlayQueue posts ids, current index and position', () async {
+      final (repository, adapter) = buildRepository(
+        (options) => jsonResponse(null),
+      );
+
+      await repository.savePlayQueue(
+        songIds: ['s-1', 's-2'],
+        currentIndex: 1,
+        positionMs: 9000,
+      );
+
+      final request = adapter.requests.single;
+      expect(request.uri.path, '/api/queue');
+      expect(request.method, 'POST');
+      expect(request.data, {
+        'ids': ['s-1', 's-2'],
+        'current': 1,
+        'position': 9000,
+      });
+    });
+  });
+
   group('URL builders', () {
     test('stream/download/image URLs embed the subsonic credential', () {
       final (repository, _) = buildRepository(emptyList);

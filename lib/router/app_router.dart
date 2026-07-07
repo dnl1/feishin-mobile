@@ -15,6 +15,7 @@ import '../features/library/playlist_detail_screen.dart';
 import '../features/library/playlists_screen.dart';
 import '../features/library/radios_screen.dart';
 import '../features/library/songs_screen.dart';
+import '../features/player/full_player_screen.dart';
 import '../features/servers/add_server_screen.dart';
 import '../features/servers/servers_screen.dart';
 import '../features/shell/app_shell.dart';
@@ -126,6 +127,10 @@ final routerProvider = Provider<GoRouter>((ref) {
             ],
           ),
         ],
+      ),
+      GoRoute(
+        path: '/player',
+        builder: (context, state) => const FullPlayerScreen(),
       ),
       GoRoute(
         path: '/servers',

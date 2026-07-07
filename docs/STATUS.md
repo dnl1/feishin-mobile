@@ -96,11 +96,51 @@ Código completo e testado (65 testes verdes, `flutter analyze` limpo).
 - [ ] Validação em device/simulador iOS contra Navidrome real (mesmo
       bloqueio de hardware)
 
-## Fases 3-8
+## Fase 3 — Engine de playback core
+
+- [x] Base pura de fila/playback iniciada: enums `PlayMode`/`PlayerRepeat`/
+      `PlayerShuffle`/`PlayerStatus`/`PlayerStyle`, `QueueData`, `PlayerData`
+      e helpers portados de `player.store.ts` (`calculateNextSong`,
+      `getDualPlayerSongs`, mapeamento shuffled→queue, geração/ajuste de
+      índices shuffled, `calculateNextIndex`, navegação manual next/previous,
+      `toggleRepeat`) — `lib/features/player/`
+- [x] Testes da base de fila/playback cobrindo repeat none/all/one, shuffle
+      com índice de reprodução diferente do índice visual, dual-player em
+      repeat-one, ajuste de índices em inserção e navegação manual —
+      `test/features/player_queue_test.dart` (`flutter test`: 71 testes
+      verdes; `flutter analyze` limpo)
+- [x] Store/controller Riverpod de player iniciado: `PlayerController` com
+      estado síncrono, geração injetável de `_uniqueId`, `setQueue`,
+      `addToQueueByType` (`now`/`shuffle`/`next`/`last`), play/pause/stop,
+      next/previous/auto-next, repeat/shuffle, pause-on-next, volume/speed/
+      mute, clear/remove e move selected top/bottom/next/around target —
+      `lib/features/player/player_controller.dart`
+- [x] Testes do controller cobrindo setQueue, add next/last/now, shuffle
+      preservando faixa atual, auto-next, repeat-one, pause-on-next,
+      remove/move selected e clamps de volume/speed —
+      `test/features/player_controller_test.dart` (`flutter test`: 82 testes
+      verdes; `flutter analyze` limpo)
+- [x] Restore/autosave de fila via endpoints Navidrome (`getQueue`/
+      `saveQueue`): `ServerPlayQueue` no contrato agnóstico,
+      `NavidromeRepository.getPlayQueue/savePlayQueue` normalizando
+      `items/current/position`, e `PlayerController.restoreQueueFromServer`/
+      `saveQueueToServer` com validação contra filas de múltiplos servidores
+- [x] Testes de queue restore/autosave no repositório e controller: payload
+      POST `/api/queue`, fila vazia, normalização de músicas, restore aplicando
+      `setQueue`, save enviando IDs/índice/posição e rejeição de servidor
+      misturado (`flutter test`: 88 testes verdes; `flutter analyze` limpo)
+- [x] UI inicial do player sem engine nativa: mini player dockado acima da
+      bottom tab bar, rota `/player` com full player, controles play/pause/
+      next/previous/repeat/shuffle e lista da fila; detalhe de álbum agora
+      inicia a fila ao tocar em uma música (`flutter test`: 89 testes verdes;
+      `flutter analyze` limpo)
+- [ ] Integração SoLoud + `audio_service` — segue bloqueada pelo Spike A
+      (precisa rodar em simulador/device iOS real)
+
+## Fases 4-8
 
 | Fase | Escopo | Status |
 |---|---|---|
-| 3 | Engine de playback core | Não iniciada (depende do Spike A) |
 | 4 | Playback extra (EQ, sleep timer, scrobble, auto-DJ, downloads) | Não iniciada |
 | 5 | Favoritos, busca, lyrics, sharing, similares (+ pastas da Fase 2) | Não iniciada |
 | 6 | Visualizer | Não iniciada (depende do Spike B) |

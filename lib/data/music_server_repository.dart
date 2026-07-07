@@ -31,6 +31,25 @@ class ServerInfo {
   final String version;
 }
 
+/// Server-side saved play queue, mirroring `GetQueueResponse`.
+class ServerPlayQueue {
+  const ServerPlayQueue({
+    required this.changed,
+    required this.changedBy,
+    required this.currentIndex,
+    required this.entry,
+    required this.positionMs,
+    required this.username,
+  });
+
+  final String? changed;
+  final String? changedBy;
+  final int currentIndex;
+  final List<Song> entry;
+  final int? positionMs;
+  final String username;
+}
+
 abstract interface class MusicServerRepository {
   ServerConfig get server;
 
@@ -78,6 +97,14 @@ abstract interface class MusicServerRepository {
   Future<void> removeFromPlaylist({
     required String playlistId,
     required List<String> playlistItemIds,
+  });
+
+  // --- Play queue ---
+  Future<ServerPlayQueue> getPlayQueue();
+  Future<void> savePlayQueue({
+    required List<String> songIds,
+    int? currentIndex,
+    int? positionMs,
   });
 
   // --- Internet radio ---

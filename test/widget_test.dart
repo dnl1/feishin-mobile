@@ -2,6 +2,7 @@ import 'package:feishin_mobile/data/repository_provider.dart';
 import 'package:feishin_mobile/domain/domain.dart';
 import 'package:feishin_mobile/features/auth/auth_controller.dart';
 import 'package:feishin_mobile/features/home/home_screen.dart';
+import 'package:feishin_mobile/features/player/mini_player.dart';
 import 'package:feishin_mobile/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -112,5 +113,39 @@ void main() {
 
     expect(find.text('Música s-1'), findsOneWidget);
     expect(find.text('Música s-2'), findsOneWidget);
+  });
+
+  testWidgets('album detail can start playback and open the full player', (
+    tester,
+  ) async {
+    final repository = FakeRepository(albums: [makeAlbum('al-1')]);
+
+    await tester.pumpWidget(_scopedApp(repository));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Biblioteca'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Álbuns'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Álbum al-1'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Música s-1'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(MiniPlayer), findsOneWidget);
+    expect(find.byTooltip('Pausar'), findsOneWidget);
+
+    await tester.tap(find.byType(MiniPlayer));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Tocando agora'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('Fila'),
+      300,
+      scrollable: find.byType(Scrollable).last,
+    );
+    expect(find.text('Fila'), findsOneWidget);
+    expect(find.text('Música s-1'), findsWidgets);
   });
 }
