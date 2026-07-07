@@ -54,3 +54,54 @@ jobs:
       # Signing/TestFlight upload is a separate release workflow, added in
       # phase 8 once there's an Apple Developer account to sign with.
       - run: flutter build ios --release --no-codesign
+
+  ios-theme-screenshots:
+    name: iOS theme screenshots (Simulator)
+    runs-on: macos-latest
+    needs: analyze-and-test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+
+      - run: flutter pub get
+
+      - name: Generate freezed/json_serializable/riverpod code
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      # "Layer 2" of the no-Mac-access verification strategy for the ported
+      # themes (docs/STATUS.md, Fase 7): the Linux golden tests catch token
+      # mapping bugs cheaply, but only a real iOS Simulator shows the actual
+      # Xcode/UIKit rendering pipeline (fonts, dynamic type, dark mode).
+      - name: Boot an iOS Simulator
+        id: simulator
+        run: |
+          UDID=$(xcrun simctl list devices available --json | python3 -c "
+          import json, sys
+          data = json.load(sys.stdin)
+          for devices in data['devices'].values():
+              for d in devices:
+                  if d['name'].startswith('iPhone') and d['isAvailable']:
+                      print(d['udid'])
+                      sys.exit(0)
+          sys.exit(1)
+          ")
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+
+      - name: Run theme screenshots via flutter drive
+        run: |
+          flutter drive \
+            --driver=test_driver/integration_test.dart \
+            --target=integration_test/theme_screenshots_test.dart \
+            -d ${{ steps.simulator.outputs.udid }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theme-screenshots
+          path: screenshots/
+          if-no-files-found: error
