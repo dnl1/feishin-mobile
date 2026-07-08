@@ -137,7 +137,7 @@ Código completo e testado (65 testes verdes, `flutter analyze` limpo).
 - [ ] Integração SoLoud + `audio_service` — segue bloqueada pelo Spike A
       (precisa rodar em simulador/device iOS real)
 
-## Fase 7 — Temas + i18n (en/pt-BR; 34 locales restantes ficam como próximo passo)
+## Fase 7 — Temas + i18n (32 temas + 36 locales)
 
 Escolhida para avançar em paralelo à Fase 3 porque é 100% Dart/Flutter, sem
 nenhuma dependência de áudio nativo — não corre risco de retrabalho quando o
@@ -184,32 +184,39 @@ Spike A for validado (ver estratégia de verificação sem Mac abaixo).
       se travar de novo. Confirmado rodando de ponta a ponta (job verde em
       14m13s) e os PNGs baixados batem visualmente com os golden tests do
       Linux — fonte San Francisco real, dimensões de device reais
-- [x] **i18n (escopo: `en` + `pt-BR`)**: os JSONs de `src/i18n/locales/*.json`
-      do app original usam sintaxe i18next que não entra "direto" como o
-      `PLAN.md` original assumia — referências cruzadas `$t(entity.playlist,
-      {"count":1})` (~11% das 1315 chaves) e ~24 conceitos com variantes
-      plural por categoria CLDR (`_one`/`_few`/`_many`/`_other`, varia por
-      idioma). Resolvido com um script Node one-off que roda o **i18next
-      real** (não reimplementa as regras de plural/nesting à mão) contra
-      `en.json`/`pt-BR.json`, resolvendo toda referência `$t()` e agrupando
-      variantes plural em mapas de categoria, preservando `{{var}}` →
-      `{var}` (sintaxe do easy_localization) pra interpolação em runtime —
-      gera `assets/translations/{en,pt-BR}.json` (32 conceitos plural, 0
-      `$t()`/`{{}}` residual, fallback pt-BR→en verificado)
-- [x] `easy_localization` inicializado em `main.dart`
-      (`supportedLocales: [en, pt-BR]`), `LocaleSettingsScreen` em
-      `/settings/language` (seguir sistema via `resetLocale()` + os 2
-      idiomas via `setLocale()`), ícone de idioma na home
-- [x] Testes: fidelidade dos assets de tradução (nesting resolvido, plurais
-      como mapa de categoria, fallback pt-BR→en) —
-      `test/core/i18n/translation_assets_test.dart`. Os widget tests de
-      ponta a ponta (Fases 1-3) agora sobem via `EasyLocalization` real
-      (`flutter test`: 115 testes verdes; `flutter analyze` limpo)
-- [ ] **Backlog**: os outros 34 locales — mesmo script, só precisa apontar
-      pros arquivos e adicionar a `supportedLocales`; nenhum retrabalho
-      esperado, é a mesma transformação mecânica já validada em en/pt-BR
+- [x] **i18n (36 locales — todos os idiomas do app original)**: os JSONs de
+      `src/i18n/locales/*.json` usam sintaxe i18next que não entra "direto"
+      como o `PLAN.md` original assumia — referências cruzadas
+      `$t(entity.playlist, {"count":1})` (~11% das 1315 chaves) e ~24
+      conceitos com variantes plural por categoria CLDR
+      (`_one`/`_two`/`_few`/`_many`/`_other`/`_zero`, varia por idioma — árabe
+      usa as 6). Resolvido com um script Node one-off (`readdirSync` na pasta
+      de locales do repo original — não precisa listar arquivo por arquivo)
+      que roda o **i18next real** contra os 36 arquivos de uma vez (mesma
+      config de `resources`/`fallbackLng` de `i18n.ts`), resolvendo toda
+      referência `$t()` e agrupando variantes plural em mapas de categoria,
+      preservando `{{var}}` → `{var}` (sintaxe do easy_localization) — gera
+      `assets/translations/*.json` (0 `$t()`/`{{}}` residual nos 36)
+- [x] `lib/core/i18n/supported_locales.dart`: os 36 `Locale` (`zh-Hans`/
+      `zh-Hant` via `Locale.fromSubtags` com `scriptCode`) + labels nativos
+      portados de `languages` em `i18n.ts` (5 locales que existem como
+      arquivo mas não estavam nesse array no app original — `da`, `nn`,
+      `ro`, `sk`, `uk` — ganharam label pelo endônimo padrão)
+- [x] `easy_localization` inicializado em `main.dart` com os 36,
+      `LocaleSettingsScreen` em `/settings/language` (lista ordenada por
+      label, seguir sistema via `resetLocale()`, escolha via `setLocale()`),
+      ícone de idioma na home
+- [x] Testes: todos os 36 têm asset, nenhum tem `$t()`/`{{}}` residual,
+      plurais como mapa de categoria, e a cadeia de fallback do i18next
+      carregando todos os locales juntos é `pt-BR → pt → en` (não direto
+      pra `en`) — confirmado contra uma chave que só existe em `pt` e outra
+      que falta nos dois — `test/core/i18n/translation_assets_test.dart`.
+      Os widget tests de ponta a ponta (Fases 1-3) sobem via
+      `EasyLocalization` real (`flutter test`: 116 testes verdes;
+      `flutter analyze` limpo)
 - [ ] Validação visual em device/simulador iOS real (ProMotion, cores OLED,
-      dynamic type) — reservada pra polish da Fase 8, não bloqueia o porte
+      dynamic type, RTL de verdade em árabe/farsi) — reservada pra polish
+      da Fase 8, não bloqueia o porte
 
 ### Estratégia de verificação sem Mac (Fase 7 e além)
 

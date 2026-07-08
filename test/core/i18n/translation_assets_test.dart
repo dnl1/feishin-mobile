@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:easy_localization/easy_localization.dart';
+import 'package:feishin_mobile/core/i18n/supported_locales.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Fidelity checks on assets/translations/*.json — the flattened,
@@ -21,8 +23,23 @@ void main() {
     return [node];
   }
 
-  test('en and pt-BR have no unresolved i18next nesting or interpolation', () {
-    for (final locale in ['en', 'pt-BR']) {
+  final localeFileNames = supportedLocales
+      .map((l) => l.toStringWithSeparator(separator: '-'))
+      .toList();
+
+  test('all 36 ported locales have an asset file', () {
+    expect(localeFileNames.length, 36);
+    for (final locale in localeFileNames) {
+      expect(
+        File('assets/translations/$locale.json').existsSync(),
+        isTrue,
+        reason: locale,
+      );
+    }
+  });
+
+  test('no locale has unresolved i18next nesting or interpolation', () {
+    for (final locale in localeFileNames) {
       final data = load(locale);
       for (final value in leaves(data)) {
         if (value is! String) continue;
@@ -67,15 +84,29 @@ void main() {
     expect(pt['entity']['playlist']['many'], isNotNull);
   });
 
-  test('pt-BR falls back to en for keys missing from its own source', () {
+  test('pt-BR falls back through pt before reaching en, matching i18next', () {
     final en = load('en');
-    final pt = load('pt-BR');
-    // Known-missing key in the original pt-BR.json (not ported by the web
-    // app's translators) — must resolve via the en fallback, not go blank.
-    expect(pt['table']['config']['general']['alignRight'], isNotEmpty);
+    final pt = load('pt');
+    final ptBr = load('pt-BR');
+
+    // Missing from pt-BR's own source but present in pt (Portugal) — since
+    // all 36 locales load into one i18next instance (mirroring i18n.ts),
+    // the language chain is pt-BR -> pt -> en, so this must resolve to
+    // pt's translation, not skip straight to English.
     expect(
+      ptBr['table']['config']['general']['alignRight'],
+      'Alinhar à direita',
+    );
+    expect(
+      ptBr['table']['config']['general']['alignRight'],
       pt['table']['config']['general']['alignRight'],
-      en['table']['config']['general']['alignRight'],
+    );
+
+    // Missing from *both* pt-BR and pt — only then does it fall through to
+    // the global fallbackLng: en.
+    expect(
+      ptBr['form']['shareItem']['successMustClick'],
+      en['form']['shareItem']['successMustClick'],
     );
   });
 }

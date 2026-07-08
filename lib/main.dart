@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'core/i18n/supported_locales.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/app_theme_id.dart';
 import 'features/auth/auth_controller.dart';
@@ -10,11 +11,6 @@ import 'features/auth/server_store.dart';
 import 'features/settings/theme_controller.dart';
 import 'features/settings/theme_store.dart';
 import 'router/app_router.dart';
-
-/// Ported from feishin's `src/i18n/locales/*.json` — see docs/STATUS.md,
-/// Fase 7. Only `en` (fallback) and `pt-BR` are shipped for now; the other
-/// 34 locales are backlog, resolved with the same Node/i18next script.
-const supportedLocales = [Locale('en'), Locale('pt', 'BR')];
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

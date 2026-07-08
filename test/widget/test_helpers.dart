@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:feishin_mobile/core/i18n/supported_locales.dart';
 import 'package:feishin_mobile/core/theme/app_theme_id.dart';
 import 'package:feishin_mobile/data/repository_provider.dart';
 import 'package:feishin_mobile/domain/domain.dart';
