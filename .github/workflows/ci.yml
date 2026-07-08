@@ -73,6 +73,16 @@ jobs:
       - name: Generate freezed/json_serializable/riverpod code
         run: dart run build_runner build --delete-conflicting-outputs
 
+      # Diagnostic only (docs/STATUS.md, Fase 7 — "flutter drive hangs on
+      # VM Service"): this job started hanging at "Waiting for VM Service
+      # port to be available..." with the runner's current Xcode/Simulator
+      # (26.5) — logs which Xcode versions are actually on the runner in
+      # case an older, less bleeding-edge one is available to pin to.
+      - name: List available Xcode versions
+        run: |
+          ls /Applications | grep -i xcode || true
+          xcodebuild -version
+
       # "Layer 2" of the no-Mac-access verification strategy for the ported
       # themes (docs/STATUS.md, Fase 7): the Linux golden tests catch token
       # mapping bugs cheaply, but only a real iOS Simulator shows the actual

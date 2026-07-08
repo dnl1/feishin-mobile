@@ -232,7 +232,14 @@ de temas usa duas camadas — **as duas implementadas e verificadas**:
    tentativa travou ~30min no handshake do `flutter drive` com um device de
    runtime não-default; corrigido escolhendo sempre o runtime iOS mais
    recente disponível, com timeouts (`timeout-minutes` em job/steps) e log
-   verboso como artifact pra não repetir uma trava sem diagnóstico.
+   verboso como artifact pra não repetir uma trava sem diagnóstico. Rodou
+   verde 2x seguidas (14min, depois 8m47s) — mas a partir do runner migrar
+   pra macOS 26/Xcode 26.5 (ver "Bloqueios conhecidos") voltou a travar
+   consistentemente (3/3 tentativas) em "Waiting for VM Service port to be
+   available", sem nenhuma mudança de código no caminho desse teste
+   (`pubspec.yaml`/`pubspec.lock` idênticos entre a run verde e as
+   vermelhas) — indício forte de incompatibilidade do Flutter 3.44.5 com
+   o Simulator do Xcode 26.5, não regressão da Fase 7
 
 ## Fases 4, 5, 6, 8
 
@@ -257,6 +264,17 @@ de temas usa duas camadas — **as duas implementadas e verificadas**:
 - **Só Navidrome implementado por decisão do usuário** — Jellyfin/Subsonic
   ficam para depois da Fase 1 provar a arquitetura (`MusicServerRepository`
   já desenhada pra isso ser aditivo, não retrabalho).
+- **Job `ios-theme-screenshots` quebrado desde a migração do runner `macos-
+  latest` pra macOS 26/Xcode 26.5** (2026-06-15+): `flutter drive` trava
+  indefinidamente em "Waiting for VM Service port to be available..." logo
+  após o app instalar e lançar no Simulator — 3/3 tentativas com
+  `pubspec.lock` idêntico ao da última run verde. Não bloqueia nada (é só a
+  "camada 2" de verificação visual de temas, camada 1 nos golden tests do
+  Linux continua cobrindo); passo de diagnóstico (`xcodebuild -version` +
+  Xcodes instalados) foi adicionado ao job pra ter esse dado na próxima
+  investigação. Encaminhamentos: esperar o Flutter suportar Xcode 26.5
+  oficialmente, tentar pinar um Xcode mais antigo no runner se um estiver
+  disponível, ou aceitar essa camada como best-effort por ora.
 
 ## Decisões já fechadas (não reabrir sem motivo novo)
 
